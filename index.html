@@ -9,7 +9,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2306040f'/%3E%3Cpath d='M9 10 4 16l5 6M23 10l5 6-5 6M18 8l-4 16' stroke='%23a99bff' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;800&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="preload" as="image" href="assets/rahat-portrait.webp" fetchpriority="high">
 <link rel="stylesheet" href="style.css">
 </head>
@@ -31,9 +31,8 @@
 </svg>
 
 <div class="loader" aria-hidden="true">
-  <div class="loader__logo"><svg viewBox="0 0 40 24"><path d="M11 4 3 12l8 8M29 4l8 8-8 8M23 2l-6 20"/></svg></div>
-  <div class="loader__count"><span>0</span>%</div>
-  <div class="loader__bar"><i></i></div>
+  <div class="loader__mark"></div>
+  <div class="loader__word"><span>Rahat</span></div>
 </div>
 
 <div class="cursor" aria-hidden="true"><span class="cursor__label"></span></div>
@@ -48,7 +47,7 @@
   </a>
   <nav class="nav__links" aria-label="Primary">
     <span class="nav__pill" aria-hidden="true"></span>
-    <a href="#stack" class="is-active">Stack</a>
+    <a href="#stack">Stack</a>
     <a href="#work">Work</a>
     <a href="#process">Process</a>
     <a href="#contact">Contact</a>
@@ -83,8 +82,9 @@
       <span class="line l-dimmer"><span>beyond</span></span>
     </h1>
     <div class="hero__lede">
-      <p class="status"><i class="dot"></i>Open to new projects</p>
-      <p><b>Rahat Hasan</b> — senior full-stack developer. Developer tools, Android apps, web and AI.</p>
+      <p class="hero__who">Rahat Hasan</p>
+      <p>I build developer tools, Android apps and AI workflows, end to end.</p>
+      <p class="hero__open"><i></i>Taking new projects</p>
     </div>
   </div>
 
@@ -97,26 +97,32 @@
   <p class="manifesto__text split-words">I'm Rahat. I build the tools I wish existed — then polish them until other developers want them too. Editors, Android apps, APIs, AI workflows: if it runs, I've taken it apart for fun. Playful in the lab. Ruthless in production.</p>
 </section>
 
-<!-- ============ STACK (floating sticker field) ============ -->
-<section class="float" id="stack" aria-labelledby="stack-title">
-  <div class="float__stage">
-    <div class="float__head">
+<!-- ============ STACK (horizon: black → indigo → white → black) ============ -->
+<section class="flow" id="stack" aria-labelledby="stack-title">
+  <div class="flow__stage">
+    <div class="flow__sky" aria-hidden="true"></div>
+    <canvas class="flow__ribbon" aria-hidden="true"></canvas>
+    <div class="flow__copy">
       <p class="eyebrow"><span>02</span> Stack</p>
-      <h2 class="float__title" id="stack-title">Full-stack,<br><em>literally.</em></h2>
+      <h2 class="flow__title" id="stack-title">One person. Every layer. Zero hand-offs.</h2>
     </div>
-    <div class="float__field" aria-hidden="true">
-      <div class="sticker sticker--front" style="--x:22%;--y:13%;--w:21vw;--r:-8deg" data-speed="1.4"><div class="sticker__out"><div class="sticker__tilt"><div class="sticker__in" style="animation-delay:-0.0s"><svg viewBox="0 0 240 170"><rect x="2" y="2" width="236" height="166" rx="18" fill="#120a3e" stroke="#a99bff" stroke-width="3"/><circle cx="24" cy="22" r="6" fill="#ff6b81"/><circle cx="44" cy="22" r="6" fill="#ffd166"/><circle cx="64" cy="22" r="6" fill="#7dffb2"/><g font-family="Geist Mono,monospace" font-size="13"><text x="20" y="62" fill="#a99bff">const</text><text x="70" y="62" fill="#f4f2ff">ship = ()</text><text x="20" y="86" fill="#8a84b8">  =&gt;</text><text x="52" y="86" fill="#7dffb2">build</text><text x="98" y="86" fill="#f4f2ff">(idea)</text><text x="20" y="110" fill="#a99bff">await</text><text x="70" y="110" fill="#f4f2ff">deploy()</text><text x="20" y="134" fill="#8a84b8">// works ✓</text></g></svg></div></div></div></div>
-      <div class="sticker sticker--front" style="--x:70%;--y:9%;--w:12.5vw;--r:12deg" data-speed="1.9"><div class="sticker__out"><div class="sticker__tilt"><div class="sticker__in" style="animation-delay:-0.7s"><svg viewBox="0 0 124 230"><rect x="3" y="3" width="118" height="224" rx="24" fill="#0b0634" stroke="#f1edff" stroke-width="4"/><rect x="12" y="14" width="100" height="202" rx="16" fill="#2a17b5"/><g stroke="rgba(241,237,255,.25)" stroke-width="1.5"><path d="M12 60h100M12 110h100M12 160h100M45 14v202M80 14v202"/></g><path d="M34 190C60 150 40 110 90 50" stroke="#f1edff" stroke-width="5" fill="none" stroke-linecap="round"/><circle cx="34" cy="190" r="8" fill="#7dffb2"/><circle cx="90" cy="50" r="8" fill="#7dffb2"/><rect x="44" y="20" width="36" height="7" rx="3.5" fill="#0b0634"/></svg></div></div></div></div>
-      <div class="sticker sticker--front" style="--x:29%;--y:63%;--w:8vw;--r:-14deg" data-speed="2.4"><div class="sticker__out"><div class="sticker__tilt"><div class="sticker__in" style="animation-delay:-1.4s"><svg viewBox="0 0 100 100"><rect x="2" y="6" width="96" height="92" rx="18" fill="#3a22d6"/><rect x="10" y="4" width="80" height="76" rx="14" fill="#8a74ff"/><text x="50" y="58" text-anchor="middle" font-family="Onest,sans-serif" font-size="42" font-weight="600" fill="#fff">⌘</text></svg></div></div></div></div>
-      <div class="sticker sticker--back" style="--x:85%;--y:56%;--w:10vw;--r:10deg" data-speed="1.2"><div class="sticker__out"><div class="sticker__tilt"><div class="sticker__in" style="animation-delay:-2.1s"><svg viewBox="0 0 160 110"><defs><linearGradient id="gB" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f1edff"/><stop offset="1" stop-color="#8a74ff"/></linearGradient></defs><text x="80" y="88" text-anchor="middle" font-family="Onest,sans-serif" font-size="100" font-weight="600" fill="url(#gB)" stroke="#160b52" stroke-width="8" paint-order="stroke" letter-spacing="-6">{ }</text></svg></div></div></div></div>
-      <div class="sticker sticker--front" style="--x:57%;--y:57%;--w:5.5vw;--r:-6deg" data-speed="2.8"><div class="sticker__out"><div class="sticker__tilt"><div class="sticker__in" style="animation-delay:-2.8s"><svg viewBox="0 0 60 80"><path d="M6 4l48 40-22 3 12 24-10 5-12-24-16 15z" fill="#fff" stroke="#0a0620" stroke-width="4" stroke-linejoin="round"/></svg></div></div></div></div>
-      <div class="sticker sticker--back" style="--x:53%;--y:5%;--w:7vw;--r:0deg" data-speed="1.0"><div class="sticker__out"><div class="sticker__tilt"><div class="sticker__in" style="animation-delay:-3.5s"><svg viewBox="0 0 100 100"><defs><linearGradient id="gS" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f1edff"/><stop offset="1" stop-color="#5b3cff"/></linearGradient></defs><path d="M50 2C54 34 66 46 98 50 66 54 54 66 50 98 46 66 34 54 2 50 34 46 46 34 50 2z" fill="url(#gS)"/></svg></div></div></div></div>
-      <div class="sticker sticker--front" style="--x:63%;--y:77%;--w:16vw;--r:6deg" data-speed="1.6"><div class="sticker__out"><div class="sticker__tilt"><div class="sticker__in" style="animation-delay:-4.2s"><svg viewBox="0 0 230 70"><rect x="2" y="2" width="226" height="66" rx="33" fill="#f1edff"/><g stroke="#0a0620" stroke-width="3.5" fill="none"><circle cx="34" cy="22" r="6"/><circle cx="34" cy="50" r="6"/><circle cx="58" cy="30" r="6"/><path d="M34 28v16M58 36c0 8-24 4-24 8"/></g><text x="78" y="42" font-family="Geist Mono,monospace" font-size="15" font-weight="500" fill="#0a0620">main ← ship/v2</text></svg></div></div></div></div>
-      <div class="sticker sticker--front" style="--x:8%;--y:75%;--w:20vw;--r:-4deg" data-speed="2.0"><div class="sticker__out"><div class="sticker__tilt"><div class="sticker__in" style="animation-delay:-4.9s"><svg viewBox="0 0 260 64"><rect x="2" y="2" width="256" height="60" rx="14" fill="#0a0620" stroke="#a99bff" stroke-width="3"/><text x="20" y="39" font-family="Geist Mono,monospace" font-size="17" fill="#a99bff">$</text><text x="40" y="39" font-family="Geist Mono,monospace" font-size="17" fill="#f4f2ff">npm run ship</text><text x="228" y="40" font-family="Onest,sans-serif" font-size="20" fill="#7dffb2">✓</text></svg></div></div></div></div>
-      <div class="sticker sticker--back" style="--x:1%;--y:47%;--w:8.5vw;--r:-10deg" data-speed="1.1"><div class="sticker__out"><div class="sticker__tilt"><div class="sticker__in" style="animation-delay:-5.6s"><svg viewBox="0 0 110 110"><defs><linearGradient id="gT" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6a4dff"/><stop offset="1" stop-color="#22109a"/></linearGradient></defs><rect x="3" y="3" width="104" height="104" rx="26" fill="url(#gT)" stroke="#a99bff" stroke-width="3"/><text x="55" y="66" text-anchor="middle" font-family="Geist Mono,monospace" font-size="30" font-weight="500" fill="#fff">&lt;/&gt;</text></svg></div></div></div></div>
+    <div class="flow__cards">
+      <article class="gcard">
+        <p class="gcard__t"><span>Brudcode</span> lines in one paste</p>
+        <div class="viz-lines" aria-hidden="true"><i style="--w:72%;--d:0.00s"></i><i style="--w:48%;--d:0.18s"></i><i style="--w:86%;--d:0.36s"></i><i style="--w:60%;--d:0.54s"></i><i style="--w:92%;--d:0.72s"></i><i style="--w:40%;--d:0.90s"></i><i style="--w:78%;--d:1.08s"></i><i style="--w:66%;--d:1.26s"></i></div>
+        <p class="gcard__n"><b data-from="0" data-to="384">0</b>k</p>
+      </article>
+      <article class="gcard">
+        <p class="gcard__t"><span>Hand-offs</span> design → code → ship</p>
+        <svg class="viz-path" viewBox="0 0 200 90" aria-hidden="true"><path id="handoff" d="M20 64 C60 64 60 24 100 24 S140 64 180 64"/><g class="nodes"><circle cx="20" cy="64" r="9"/><circle cx="100" cy="24" r="9"/><circle cx="180" cy="64" r="9"/></g><g class="node-t"><text x="20" y="86">design</text><text x="100" y="12">code</text><text x="180" y="86">ship</text></g><circle class="runner" r="5"><animateMotion dur="2.6s" repeatCount="indefinite" keyPoints="0;1" keyTimes="0;1" calcMode="spline" keySplines=".6 0 .4 1"><mpath href="#handoff"/></animateMotion></circle></svg>
+        <p class="gcard__n"><b data-from="12" data-to="0">12</b></p>
+      </article>
+      <article class="gcard">
+        <p class="gcard__t"><span>Reply</span> to every brief</p>
+        <svg class="viz-clock" viewBox="0 0 120 120" aria-hidden="true"><circle class="track" cx="60" cy="60" r="46"/><circle class="arc" cx="60" cy="60" r="46" pathLength="100"/><g class="hands"><line x1="60" y1="60" x2="60" y2="26"/><line class="m" x1="60" y1="60" x2="82" y2="60"/></g><circle cx="60" cy="60" r="4" fill="#fff"/></svg>
+        <p class="gcard__n"><b data-from="0" data-to="24">0</b>h</p>
+      </article>
     </div>
-    <p class="float__word" aria-hidden="true"><span>FULL//STACK</span></p>
-    <p class="float__cap">Web · Android · Dev tools · AI — one person, every layer.</p>
   </div>
 </section>
 
@@ -138,76 +144,96 @@
   <div class="cases__preview" aria-hidden="true"><img alt=""></div>
 </section>
 
-<!-- ============ PROCESS (lens) ============ -->
-<section class="exp" id="process">
-  <div class="exp__copy">
-    <p class="eyebrow"><span>04</span> Process</p>
-    <h2 class="h2">Craft you can <em>inspect.</em></h2>
-    <ol class="steps">
-      <li><span>01</span><b>Discover</b>One goal, one metric.</li>
-      <li><span>02</span><b>Prototype</b>In code, from day one.</li>
-      <li><span>03</span><b>Build</b>Weekly live previews.</li>
-      <li><span>04</span><b>Ship</b>Measured and monitored.</li>
-    </ol>
+<!-- ============ PROCESS (build machine) ============ -->
+<section class="pm" id="process" aria-labelledby="pm-title">
+  <div class="pm__copy">
+    <h2 class="pm__title" data-speed="70" id="pm-title">Idea in.<br><em>Product out.</em></h2>
+    <p class="pm__lede" data-speed="100">One machine. Four stages. No surprises.</p>
+    <p class="pm__flow" data-speed="120">Discover <i>→</i> Prototype <i>→</i> Build <i>→</i> Ship</p>
+    <a href="#contact" class="btn btn--light pm__cta" data-speed="140">Start a project</a>
   </div>
-  <div class="lens" data-cursor="Inspect">
-    <img src="assets/lens-base.webp" alt="A person standing in a dark room lit by purple light" loading="lazy">
-    <div class="lens__hud" aria-hidden="true">
-      <img src="assets/lens-hud.webp" alt="" loading="lazy">
-      <div class="tag t1"><i></i>LCP 0.8 s · CLS 0.00</div>
-      <div class="tag t2"><i></i>60 fps · 38 draw calls</div>
-      <div class="tag t3"><i></i>axe · 0 violations</div>
-      <div class="reticle"></div>
-    </div>
-    <p class="lens__hint">Hover or drag to inspect the build</p>
+  <div class="pm__stage">
+    <svg class="pm__svg" viewBox="-330 -400 660 640" role="group" aria-label="Interactive process machine"></svg>
+    <p class="pm__hint">Click anything. It all works.</p>
   </div>
+  <aside class="pm__read">
+    <div class="pm__stat" data-speed="60"><b>Weekly</b><span>live previews</span></div>
+    <div class="pm__stat" data-speed="110"><b>0.8<small>s</small></b><span>load time</span></div>
+    <div class="pm__stat" data-speed="160"><b>0</b><span>accessibility errors</span></div>
+  </aside>
 </section>
 
 <!-- ============ CONTACT ============ -->
-<section class="preorder" id="contact">
-  <div class="preorder__glow" aria-hidden="true"></div>
-  <p class="eyebrow eyebrow--c"><span>05</span> Contact</p>
-  <h2 class="preorder__title"><span>Let's build</span> <span><em>beyond.</em></span></h2>
-
-  <ul class="socials" aria-label="Find Rahat online">
-    <li><a class="social magnetic" href="https://github.com/rahatarch" target="_blank" rel="noopener"><svg aria-hidden="true"><use href="#i-gh"/></svg><span>GitHub</span><small>@rahatarch</small></a></li>
-    <li><a class="social magnetic" href="https://marketplace.visualstudio.com/items?itemName=akkhar-labs.brud" target="_blank" rel="noopener"><svg aria-hidden="true"><use href="#i-vs"/></svg><span>Marketplace</span><small>Brudcode</small></a></li>
-    <li><a class="social magnetic" href="#" data-todo="LinkedIn URL"><svg aria-hidden="true"><use href="#i-in"/></svg><span>LinkedIn</span><small>Rahat Hasan</small></a></li>
-    <li><a class="social social--mail magnetic" href="mailto:hello@example.com" data-email="hello@example.com"><svg aria-hidden="true"><use href="#i-mail"/></svg><span>Email</span><small>Click to copy</small></a></li>
-  </ul>
-
-  <form class="form" novalidate>
-    <div class="form__row">
-      <div class="field"><input id="f-name" name="name" type="text" placeholder=" " autocomplete="name" required><label for="f-name">Your name</label><small></small></div>
-      <div class="field"><input id="f-mail" name="email" type="email" placeholder=" " autocomplete="email" required><label for="f-mail">Email</label><small></small></div>
+<section class="contact" id="contact" aria-labelledby="contact-title">
+  <canvas class="kx__ascii" aria-hidden="true"></canvas>
+  <div class="kx__art" aria-hidden="true">
+    <img class="kx__poster" src="assets/knot/poster-center.webp" alt="" loading="lazy" decoding="async">
+    <canvas class="kx__gl"></canvas>
+    <img class="kx__frag" src="assets/knot/fragment.webp" alt="" loading="lazy" decoding="async">
+  </div>
+  <div class="kx__panel">
+    <div class="kx__inner">
+      <p class="eyebrow"><span>05</span> Contact</p>
+      <h2 class="sr-only" id="contact-title">Contact Rahat</h2>
+      <form class="form mad" novalidate>
+        <p class="mad__row">Hey Rahat, my name is
+          <label class="mad__f"><span class="sr-only">Your name</span><input name="name" type="text" placeholder="your name" autocomplete="name" required></label>
+          and I'm from
+          <label class="mad__f"><span class="sr-only">Country (optional)</span><input name="country" type="text" placeholder="country" autocomplete="country-name"></label></p>
+        <div class="mad__row" role="radiogroup" aria-labelledby="mad-about"><span id="mad-about">Let's build</span>
+          <label class="mad__chip"><input type="radio" name="type" value="Web app" checked><span>Web app</span></label>
+          <label class="mad__chip"><input type="radio" name="type" value="Android app"><span>Android app</span></label>
+          <label class="mad__chip"><input type="radio" name="type" value="Dev tools"><span>Dev tools</span></label>
+          <label class="mad__chip"><input type="radio" name="type" value="AI workflow"><span>AI workflow</span></label></div>
+        <div class="mad__row">We can talk more at
+          <label class="mad__f"><span class="sr-only">Your email or WhatsApp</span><input name="contact" type="email" placeholder="your email" autocomplete="email" required><button type="button" class="mad__x" aria-label="Clear" hidden>×</button></label>
+          <span class="mad__via" role="radiogroup" aria-label="Reply on">
+            <label class="mad__chip"><input type="radio" name="channel" value="WhatsApp"><span>WhatsApp</span></label>
+            <label class="mad__chip"><input type="radio" name="channel" value="Email" checked><span>Email</span></label></span></div>
+        <p class="mad__row">In short,
+          <label class="mad__f mad__f--fill"><span class="sr-only">Your message</span><input name="message" type="text" placeholder="type your message" required></label></p>
+        <p class="mad__err" aria-live="polite"></p>
+        <button type="submit" class="mad__btn"><span class="btn__txt">Send message</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M8 6h10v10"/></svg></button>
+        <p class="form__ok" role="status" aria-live="polite"></p>
+      </form>
+      <p class="kx__foot">Or write to <a href="mailto:hello@example.com" data-email="hello@example.com">hello@example.com</a></p>
     </div>
-    <fieldset class="chips"><legend>I need</legend>
-      <label><input type="radio" name="type" value="Web app" checked><span>Web app</span></label>
-      <label><input type="radio" name="type" value="Android app"><span>Android app</span></label>
-      <label><input type="radio" name="type" value="Developer tool"><span>Developer tool</span></label>
-      <label><input type="radio" name="type" value="AI workflow"><span>AI workflow</span></label>
-    </fieldset>
-    <div class="field"><textarea id="f-msg" name="message" placeholder=" " rows="3" required></textarea><label for="f-msg">What are we building?</label><small></small></div>
-    <button type="submit" class="btn btn--light btn--lg magnetic"><span class="btn__txt">Send it</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg></button>
-    <p class="form__note">Reply within 24 hours.</p>
-    <p class="form__ok" role="status" aria-live="polite"></p>
-  </form>
+  </div>
+</section>
+
+<!-- ============ GIFT: sticker board ============ -->
+<section class="gift" id="gift" aria-labelledby="gift-title">
+  <h2 class="gift__word" id="gift-title" data-speed="120" data-depth="0" data-f="0">stickers</h2>
+  <a class="stk stk--far" href="assets/sticker/full/dream-bigger.png" download aria-label="Download the Dream Bigger sticker" style="--x:37%;--y:22%;--w:10vw;--r:6deg" data-speed="160" data-depth="4"><img src="assets/sticker/dream-bigger.webp" alt="" width="683" height="820" loading="lazy" decoding="async"></a>
+  <a class="stk stk--far" href="assets/sticker/full/move-forward.png" download aria-label="Download the Move Forward sticker" style="--x:41%;--y:80%;--w:9.5vw;--r:-7deg" data-speed="180" data-depth="4"><img src="assets/sticker/move-forward.webp" alt="" width="636" height="820" loading="lazy" decoding="async"></a>
+  <a class="stk" href="assets/sticker/full/rahat-builder.webp" download aria-label="Download the Rahat builder sticker" style="--x:16%;--y:27%;--w:15vw;--r:-6deg" data-speed="300" data-depth="10"><img src="assets/sticker/rahat-builder.webp" alt="" width="820" height="811" loading="lazy" decoding="async"></a>
+  <a class="stk" href="assets/sticker/full/murderer.webp" download aria-label="Download the Murderer sticker" style="--x:84%;--y:26%;--w:13.5vw;--r:7deg" data-speed="340" data-depth="10"><img src="assets/sticker/murderer.webp" alt="" width="788" height="820" loading="lazy" decoding="async"></a>
+  <a class="stk" href="assets/sticker/full/motion.webp" download aria-label="Download the Motion sticker" style="--x:15%;--y:75%;--w:13.5vw;--r:5deg" data-speed="280" data-depth="10"><img src="assets/sticker/motion.webp" alt="" width="772" height="820" loading="lazy" decoding="async"></a>
+  <a class="stk" href="assets/sticker/full/rahat-outrunning.webp" download aria-label="Download the Rahat Outrunning sticker" style="--x:80%;--y:73%;--w:12.5vw;--r:-5deg" data-speed="320" data-depth="10"><img src="assets/sticker/rahat-outrunning.webp" alt="" width="695" height="820" loading="lazy" decoding="async"></a>
+  <a class="stk stk--near" href="assets/sticker/full/rahat-cobalt.webp" download aria-label="Download the Rahat Cobalt sticker" style="--x:62%;--y:56%;--w:9.5vw;--r:9deg" data-speed="520" data-depth="18"><img src="assets/sticker/rahat-cobalt.webp" alt="" width="592" height="820" loading="lazy" decoding="async"></a>
+  <p class="gift__scroll" data-speed="60" data-depth="0" data-f="0"><span>↓</span> tap any sticker, it's your gift <span>↓</span></p>
 </section>
 </main>
 
 <footer class="footer">
   <div class="footer__top">
     <p>Rahat Hasan — Senior full-stack developer, Bangladesh.</p>
-    <nav aria-label="Social"><a href="https://github.com/rahatarch" target="_blank" rel="noopener">GitHub</a><a href="#" data-todo="LinkedIn URL">LinkedIn</a><a href="https://brudcode.com/" target="_blank" rel="noopener">Brudcode</a></nav>
     <a href="#top" class="totop">Back to top ↑</a>
   </div>
-  <p class="footer__word" aria-hidden="true">Rahat</p>
-  <p class="footer__legal">© 2026 Rahat Hasan. Photography via Unsplash.</p>
+  <div class="footer__stage">
+    <p class="footer__word" aria-hidden="true">Rahat</p>
+    <nav class="footer__social" aria-label="Find Rahat online">
+      <a href="https://github.com/rahatarch" target="_blank" rel="noopener" aria-label="GitHub"><svg aria-hidden="true"><use href="#i-gh"/></svg><span>GitHub</span></a>
+      <a href="#" data-todo="LinkedIn URL" aria-label="LinkedIn"><svg aria-hidden="true"><use href="#i-in"/></svg><span>LinkedIn</span></a>
+      <a href="https://brudcode.com/" target="_blank" rel="noopener" aria-label="Brudcode"><svg aria-hidden="true"><use href="#i-vs"/></svg><span>Brudcode</span></a>
+    </nav>
+  </div>
 </footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
 <script type="module" src="main.js"></script>
 </body>
 </html>

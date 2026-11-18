@@ -110,29 +110,6 @@ em{font-style:normal;color:var(--lav)}
 .manifesto__text{font-size:clamp(28px,4vw,64px);line-height:1.12;letter-spacing:-.03em;font-weight:400}
 .manifesto__text .w{opacity:.14;transition:none}
 
-/* ---------- product ---------- */
-.product{position:relative}
-.product__stage{position:relative;height:100svh;overflow:hidden;isolation:isolate;background:
-  radial-gradient(55% 38% at 50% 46%,rgba(138,116,255,.55) 0%,rgba(83,51,242,.28) 45%,rgba(83,51,242,0) 75%),
-  radial-gradient(120% 70% at 50% 100%,#05030f 30%,rgba(5,3,15,0) 70%),
-  linear-gradient(180deg,#06040f 0%,#120a4a 22%,#2a17b5 46%,#3a22d6 54%,#1a0d70 70%,#07051a 88%,#05030f 100%)}
-.product__canvas{z-index:1}
-.lap__word{position:absolute;inset:0;z-index:0;display:flex;align-items:center;justify-content:center;pointer-events:none;overflow:hidden}
-.lap__word span{display:block;white-space:nowrap;font-weight:600;font-size:clamp(120px,21vw,380px);letter-spacing:-.07em;line-height:.8;margin-top:-6vh;
-  background:linear-gradient(180deg,#f4f1ff 0%,#d9d1ff 55%,#a99bff 100%);-webkit-background-clip:text;background-clip:text;color:transparent;will-change:transform}
-.lap__title{font-weight:400;font-size:clamp(30px,3.2vw,52px);line-height:1;letter-spacing:-.035em}
-.lap__type{position:absolute;left:var(--pad);bottom:64px;z-index:2}
-.product__canvas{position:absolute;inset:0;width:100%;height:100%}
-.product__head{position:absolute;left:var(--pad);top:clamp(96px,16vh,150px);z-index:2}
-.product__meter{position:absolute;left:var(--pad);right:var(--pad);bottom:36px;height:1px;background:var(--line)}
-.product__meter i{display:block;height:100%;background:var(--lav);transform-origin:left;transform:scaleX(0)}
-
-.kbd-hint{font-size:13px;color:var(--muted)}
-kbd{font:500 11px var(--mono);padding:4px 8px;border-radius:6px;border:1px solid var(--line);border-bottom-width:3px;margin-right:6px;color:var(--ink)}
-.typed{margin-top:14px;font:400 14px var(--mono);color:var(--lav);min-height:1.6em;white-space:nowrap}
-.typed b{font-weight:500;color:var(--faint);margin-right:6px}
-.typed i{display:inline-block;width:8px;height:1.1em;vertical-align:-2px;background:var(--lav);margin-left:2px;animation:blink 1s steps(1) infinite}
-@keyframes blink{50%{opacity:0}}
 .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#7dffb2;box-shadow:0 0 0 0 rgba(125,255,178,.6);animation:ping 2s infinite}
 @keyframes ping{70%{box-shadow:0 0 0 8px rgba(125,255,178,0)}100%{box-shadow:0 0 0 0 rgba(125,255,178,0)}}
 .status{display:inline-flex;align-items:center;gap:10px;font:500 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink)}
@@ -156,6 +133,26 @@ kbd{font:500 11px var(--mono);padding:4px 8px;border-radius:6px;border:1px solid
 .social:hover svg{transform:rotate(-12deg) scale(1.1)}
 .social span{font-weight:500;font-size:15px}
 .social small{font:500 10px var(--mono);letter-spacing:.08em;text-transform:uppercase;opacity:.6}
+/* ---------- stack: floating sticker field ---------- */
+.float__stage{position:relative;height:100svh;min-height:620px;overflow:hidden;isolation:isolate;perspective:900px;background:
+  radial-gradient(55% 45% at 50% 52%,rgba(138,116,255,.45) 0%,rgba(83,51,242,.2) 45%,rgba(83,51,242,0) 75%),
+  linear-gradient(180deg,#06040f 0%,#120a4a 24%,#2a17b5 50%,#120a4a 78%,#06040f 100%)}
+.float__head{position:absolute;left:var(--pad);top:clamp(96px,14vh,140px);z-index:4}
+.float__title{font-weight:400;font-size:clamp(30px,3.2vw,52px);line-height:1;letter-spacing:-.035em}
+.float__word{position:absolute;inset:0;z-index:2;display:grid;place-items:center;pointer-events:none}
+.float__word span{display:block;white-space:nowrap;font-weight:600;font-size:clamp(80px,15.5vw,300px);letter-spacing:-.07em;line-height:.8;
+  background:linear-gradient(180deg,#f4f1ff 0%,#d9d1ff 55%,#a99bff 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.float__cap{position:absolute;left:50%;bottom:clamp(28px,6vh,56px);translate:-50% 0;z-index:4;font:500 11px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.float__field{position:absolute;inset:0;pointer-events:none}
+.sticker{position:absolute;left:var(--x);top:var(--y);width:var(--w);z-index:3;will-change:transform}
+.sticker--back{z-index:1}
+.sticker__out,.sticker__tilt{will-change:transform}
+.sticker__tilt{transform-style:preserve-3d}
+.sticker__in{animation:bob 7s ease-in-out infinite}
+.sticker svg{display:block;width:100%;height:auto;overflow:visible;transform:rotate(var(--r));
+  filter:drop-shadow(0 .45vw 0 #0b0634) drop-shadow(0 1.4vw 1.2vw rgba(3,2,12,.55))}
+.sticker--back svg{filter:drop-shadow(0 .35vw 0 #0b0634) drop-shadow(0 1vw 1vw rgba(3,2,12,.45)) saturate(.85) brightness(.85)}
+@keyframes bob{0%,100%{transform:translate3d(0,0,0) rotate(0)}50%{transform:translate3d(0,-1.2vw,0) rotate(2deg)}}
 /* ---------- marquee ---------- */
 .marquee{overflow:hidden;padding:clamp(40px,8vh,90px) 0;border-block:1px solid var(--line)}
 .marquee__track{display:flex;width:max-content;will-change:transform}
@@ -253,12 +250,20 @@ kbd{font:500 11px var(--mono);padding:4px 8px;border-radius:6px;border:1px solid
   .tag{font-size:10px;padding:6px 10px}.t1,.t3{left:6%}.t2{right:auto;left:16%}
 }
 @media (max-width:520px){
-  .lap__word span{font-size:30vw}
-  body{font-size:16px}
+  .sticker{width:calc(var(--w) * 1.7)}
+  .sticker:nth-child(n+8){display:none}
+  .float__word span{font-size:18.5vw}
+  .sticker:nth-child(1){--x:5%!important;--y:58%!important}
+  .sticker:nth-child(2){--x:66%!important;--y:12%!important}
+  .sticker:nth-child(3){--x:26%!important;--y:76%!important}
+  .sticker:nth-child(4){--x:78%!important;--y:58%!important}
+  .sticker:nth-child(5){--x:58%!important;--y:52%!important}
+  .sticker:nth-child(6){--x:44%!important;--y:13%!important}
+  .sticker:nth-child(7){--x:56%!important;--y:76%!important}
+  .float__cap{white-space:normal;width:84%;text-align:center}
   .footer__top nav{flex-wrap:wrap;gap:14px}
 }
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
   .manifesto__text .w{opacity:1!important}
 }
-@media (hover:none),(pointer:coarse){.kbd-hint{display:none}}

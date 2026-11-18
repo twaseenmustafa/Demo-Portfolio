@@ -1,7 +1,3 @@
-import * as THREE from 'three';
-import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
-import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
-
 const { gsap, ScrollTrigger } = window;
 gsap.registerPlugin(ScrollTrigger);
 const $ = (s, c = document) => c.querySelector(s);
@@ -246,323 +242,37 @@ $$('[data-email]').forEach(a => a.addEventListener('click', e => {
 }));
 $$('[data-todo]').forEach(a => a.addEventListener('click', e => { e.preventDefault(); toast('Link coming soon'); }));
 
-/* =========================================================
-   THREE.JS — laptop reel (recreated from the reference video)
-   closed on slab → lid opens → levitates + tilts toward camera → hover (screen plays) → spins ~180°, closes, lands
-   ========================================================= */
-const SPECIAL = { '`': 'Backquote', '-': 'Minus', '=': 'Equal', '[': 'BracketLeft', ']': 'BracketRight', '\\': 'Backslash', ';': 'Semicolon', "'": 'Quote', ',': 'Comma', '.': 'Period', '/': 'Slash', ' ': 'Space' };
-const SHIFTED = { '(': '9', ')': '0', '{': '[', '}': ']', ':': ';', '"': "'", '<': ',', '>': '.', '_': '-', '+': '=', '!': '1', '?': '/' };
-const codeOf = c => /[a-z]/i.test(c) ? 'Key' + c.toUpperCase() : /\d/.test(c) ? 'Digit' + c : SPECIAL[c];
-const keysFrom = str => [...str].map(c => [codeOf(c), c.toUpperCase(), 1]);
-const ROWS = [
-  [['Escape', 'esc', 1.5], ...Array.from({ length: 12 }, (_, i) => ['F' + (i + 1), 'F' + (i + 1), 1]), ['Power', '', 1.5]],
-  [['Backquote', '`', 1], ...keysFrom('1234567890-='), ['Backspace', 'delete', 2]],
-  [['Tab', 'tab', 1.5], ...keysFrom('qwertyuiop[]'), ['Backslash', '\\', 1.5]],
-  [['CapsLock', 'caps', 1.75], ...keysFrom("asdfghjkl;'"), ['Enter', 'return', 2.25]],
-  [['ShiftLeft', 'shift', 2.25], ...keysFrom('zxcvbnm,./'), ['ShiftRight', 'shift', 2.75]],
-  [['Fn', 'fn', 1], ['ControlLeft', 'ctrl', 1], ['AltLeft', 'opt', 1], ['MetaLeft', 'cmd', 1.25], ['Space', '', 5.75], ['MetaRight', 'cmd', 1.25], ['AltRight', 'opt', 1], ['ArrowKeys', '', 2.75]]
-];
-console.assert(ROWS.every(r => Math.abs(r.reduce((a, k) => a + k[2], 0) - 15) < 1e-6), 'every keyboard row must be 15u wide');
-
-const ease = { out: t => 1 - Math.pow(1 - t, 4), inOut: t => t < .5 ? 8 * t ** 4 : 1 - Math.pow(-2 * t + 2, 4) / 2, expo: t => t >= 1 ? 1 : 1 - Math.pow(2, -10 * t) };
-const clamp01 = v => Math.min(1, Math.max(0, v));
-
-function rrShape(w, h, r) {
-  const s = new THREE.Shape(), x = -w / 2, y = -h / 2;
-  s.moveTo(x + r, y); s.lineTo(x + w - r, y); s.absarc(x + w - r, y + r, r, -Math.PI / 2, 0);
-  s.lineTo(x + w, y + h - r); s.absarc(x + w - r, y + h - r, r, 0, Math.PI / 2);
-  s.lineTo(x + r, y + h); s.absarc(x + r, y + h - r, r, Math.PI / 2, Math.PI);
-  s.lineTo(x, y + r); s.absarc(x + r, y + r, r, Math.PI, Math.PI * 1.5);
-  return s;
-}
-// slab of given thickness, rounded in plan view like the real chassis; extrudes upward from y=0
-function chassis(w, d, r, thick, bevel) {
-  const g = new THREE.ExtrudeGeometry(rrShape(w - bevel * 2, d - bevel * 2, r), { depth: thick - bevel * 2, bevelEnabled: true, bevelThickness: bevel, bevelSize: bevel, bevelSegments: 4, curveSegments: 24 });
-  g.rotateX(-Math.PI / 2); g.translate(0, bevel, 0);
-  return g;
-}
-function noiseTex(w, h, draw) {
-  const c = document.createElement('canvas'); c.width = w; c.height = h;
-  draw(c.getContext('2d'), w, h);
-  const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping;
-  return t;
-}
-const brushed = () => noiseTex(512, 512, (x, w, h) => { // fine horizontal brushing for anodised aluminium
-  x.fillStyle = '#7a7a7a'; x.fillRect(0, 0, w, h);
-  for (let i = 0; i < 6000; i++) { const v = 110 + Math.random() * 30 | 0; x.fillStyle = `rgba(${v},${v},${v},.07)`; x.fillRect(Math.random() * w, Math.random() * h, 40 + Math.random() * 200, 1); }
-});
-const grain = (base = 26) => noiseTex(256, 256, (x, w, h) => {
-  const d = x.createImageData(w, h);
-  for (let i = 0; i < d.data.length; i += 4) { const v = base + Math.random() * 60; d.data[i] = d.data[i + 1] = d.data[i + 2] = v; d.data[i + 3] = 255; }
-  x.putImageData(d, 0, 0);
-});
-const dots = () => noiseTex(64, 256, (x, w, h) => { // speaker grille perforation
-  x.fillStyle = '#3a3b42'; x.fillRect(0, 0, w, h); x.fillStyle = '#060608';
-  for (let yy = 4; yy < h; yy += 6) for (let xx = (yy / 6 % 2) * 3 + 4; xx < w; xx += 6) { x.beginPath(); x.arc(xx, yy, 1.4, 0, 7); x.fill(); }
-});
-
-/* ---------- screen: power-on → loader → looping kinetic type (time-driven, never scroll-driven) ---------- */
-function makeScreen() {
-  const W = 1024, H = 640, c = document.createElement('canvas'); c.width = W; c.height = H;
-  const x = c.getContext('2d');
-  const PHRASES = [['I build', 'unexpected', 'things.'], ['Tools that', 'developers', 'keep.'], ['Ideas, shipped', 'before they', 'go cold.']];
-  const P = 4.8; // seconds per phrase
-  const glow = (cx, cy, r, col) => { const g = x.createRadialGradient(cx, cy, 0, cx, cy, r); g.addColorStop(0, col); g.addColorStop(1, 'rgba(0,0,0,0)'); x.fillStyle = g; x.fillRect(0, 0, W, H); };
-  const font = (w, s, f = 'Onest') => (x.font = `${w} ${s}px "${f}"`);
-  function draw(t) { // t = seconds since power-on
-    x.globalAlpha = 1; x.filter = 'none';
-    const bg = x.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, '#0b0634'); bg.addColorStop(1, '#04030c'); x.fillStyle = bg; x.fillRect(0, 0, W, H);
-    // living backdrop: drifting indigo light + the site's arc motif turning slowly
-    glow(512 + Math.sin(t * 0.4) * 120, 300 + Math.cos(t * 0.3) * 50, 420, 'rgba(83,51,242,.55)');
-    glow(512 - Math.sin(t * 0.25) * 200, 360, 300, 'rgba(162,56,255,.22)');
-    x.save(); x.translate(512, 330); x.rotate(Math.sin(t * 0.3) * 0.25);
-    const ag = x.createLinearGradient(0, -40, 0, 230); ag.addColorStop(0, 'rgba(241,237,255,.0)'); ag.addColorStop(0.3, 'rgba(241,237,255,.22)'); ag.addColorStop(1, 'rgba(106,77,255,0)');
-    x.strokeStyle = ag; x.lineWidth = 34; x.beginPath(); x.arc(0, 0, 210, 0.05, Math.PI - 0.05); x.stroke(); x.restore();
-    // light sweep
-    const sx = ((t * 0.18) % 1.6 - 0.3) * W; const sw = x.createLinearGradient(sx - 160, 0, sx + 160, 0);
-    sw.addColorStop(0, 'rgba(255,255,255,0)'); sw.addColorStop(0.5, 'rgba(255,255,255,.05)'); sw.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = sw; x.fillRect(0, 0, W, H);
-    // chrome
-    font(500, 13, 'Geist Mono'); x.fillStyle = 'rgba(244,242,255,.55)'; x.textAlign = 'left'; x.fillText('</> rahat.dev', 40, 46);
-    x.textAlign = 'right'; x.fillText('2026', W - 40, 46);
-    const L = 1.9; // loader length
-    if (t < L + 0.5) {
-      const p = clamp01(t / L), prog = p < 0.55 ? ease.out(p / 0.55) * 0.72 : 0.72 + ease.inOut((p - 0.55) / 0.45) * 0.28; // stall-then-finish, like a real boot
-      const fade = 1 - clamp01((t - L) / 0.5);
-      x.globalAlpha = fade; x.textAlign = 'center';
-      font(500, 46, 'Geist Mono'); x.fillStyle = '#c9bfff'; x.fillText('</>', 512, 290);
-      x.fillStyle = 'rgba(244,242,255,.12)'; x.fillRect(392, 330, 240, 2);
-      const lw = 240 * prog + clamp01((t - L) / 0.5) * 400;
-      const lg = x.createLinearGradient(512 - lw / 2, 0, 512 + lw / 2, 0); lg.addColorStop(0, '#5b3cff'); lg.addColorStop(1, '#f1edff');
-      x.fillStyle = lg; x.fillRect(t < L ? 392 : 512 - lw / 2, 330, t < L ? 240 * prog : lw, 2);
-      font(500, 12, 'Geist Mono'); x.fillStyle = 'rgba(244,242,255,.6)'; x.fillText(String(Math.round(prog * 100)).padStart(3, '0') + '%', 512, 362);
-      x.globalAlpha = 1;
-    }
-    if (t > L) {
-      const k = t - L, i = Math.floor(k / P) % PHRASES.length, lt = k % P;
-      x.textAlign = 'left';
-      PHRASES[i].forEach((line, j) => {
-        const inT = ease.expo(clamp01((lt - j * 0.12) / 1.0)), outT = ease.inOut(clamp01((lt - 3.7 - j * 0.06) / 0.8));
-        const y = 240 + j * 92, dy = (1 - inT) * 90 - outT * 70;
-        x.save(); x.beginPath(); x.rect(0, y - 92, W, 108); x.clip();
-        x.globalAlpha = inT * (1 - outT);
-        const blur = (1 - inT) * 10 + outT * 12; if (blur > 0.3) x.filter = `blur(${blur.toFixed(1)}px)`;
-        font(400, 88); x.letterSpacing = (-4 + (1 - inT) * 6).toFixed(1) + 'px';
-        if (j === 1) { const g = x.createLinearGradient(80, 0, 700, 0); g.addColorStop(0, '#a99bff'); g.addColorStop(1, '#f1edff'); x.fillStyle = g; } else x.fillStyle = '#f4f2ff';
-        x.fillText(line, 80, y + dy); x.restore(); x.filter = 'none'; x.letterSpacing = '0px';
-      });
-      // phrase progress + live tag
-      x.globalAlpha = 1; x.fillStyle = 'rgba(244,242,255,.1)'; x.fillRect(80, 560, 864, 2);
-      x.fillStyle = '#a99bff'; x.fillRect(80, 560, 864 * (lt / P), 2);
-      font(500, 12, 'Geist Mono'); x.fillStyle = 'rgba(244,242,255,.55)'; x.fillText(`0${i + 1} / 0${PHRASES.length}`, 80, 590);
-      x.textAlign = 'right'; x.fillStyle = '#7dffb2'; x.fillText('● LIVE', 944, 590);
-    }
-  }
-  return { canvas: c, draw };
-}
-
-function makeRenderer(canvas) {
-  const r = new THREE.WebGLRenderer({ canvas, antialias: devicePixelRatio < 2, alpha: true, powerPreference: 'high-performance' });
-  r.setPixelRatio(Math.min(devicePixelRatio, 1.75));
-  r.toneMapping = THREE.ACESFilmicToneMapping; r.toneMappingExposure = 1.0;
-  r.shadowMap.enabled = true; r.shadowMap.type = THREE.PCFSoftShadowMap;
-  const scene = new THREE.Scene();
-  scene.environment = new THREE.PMREMGenerator(r).fromScene(new RoomEnvironment(), 0.03).texture;
-  scene.environmentIntensity = 0.7;
-  return { r, scene };
-}
-
-function buildLaptop(screenTex) {
-  const W = 3.1, D = 2.15, BH = 0.075, LT = 0.04, U = 0.168, R = 0.16;
-  const brush = brushed(); brush.repeat.set(2, 2);
-  const alu = new THREE.MeshPhysicalMaterial({ color: 0x5b5d64, metalness: 1, roughness: 0.8, roughnessMap: brush, bumpMap: brush, bumpScale: 0.02, clearcoat: 0.15, clearcoatRoughness: 0.5 });
-  const black = new THREE.MeshStandardMaterial({ color: 0x08080b, roughness: 0.75 });
-  const keyMat = new THREE.MeshStandardMaterial({ color: 0x0f0f13, roughness: 0.6, metalness: 0.05 });
-  const root = new THREE.Group(), keys = {};
-  const cast = m => { m.castShadow = true; m.receiveShadow = true; return m; };
-  const flat = (geo, mat, y, z = 0, x = 0) => { const m = new THREE.Mesh(geo, mat); m.rotation.x = -Math.PI / 2; m.position.set(x, y, z); root.add(m); return m; };
-
-  root.add(cast(new THREE.Mesh(chassis(W, D, R, BH, 0.012), alu)));
-  // thumb scoop on the front edge
-  const scoop = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.02, 0.02), black); scoop.position.set(0, BH - 0.008, D / 2 - 0.002); root.add(scoop);
-  // feet
-  [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(([sx, sz]) => { const f = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.012, 24), black); f.position.set(sx * (W / 2 - 0.25), -0.004, sz * (D / 2 - 0.22)); root.add(f); });
-  // ports on the left side
-  [-0.5, -0.25].forEach(z => { const p = new THREE.Mesh(new THREE.BoxGeometry(0.01, 0.025, 0.12), black); p.position.set(-W / 2 + 0.002, BH / 2, z); root.add(p); });
-
-  const kTop = -D / 2 + 0.17, kH = 5.55 * U;
-  flat(new THREE.ShapeGeometry(rrShape(15 * U + 0.08, kH + 0.08, 0.03)), black, BH + 0.0008, kTop + kH / 2);
-  const grille = dots(); grille.repeat.set(1, 4); grille.colorSpace = THREE.SRGBColorSpace;
-  [-1, 1].forEach(s => flat(new THREE.PlaneGeometry(0.15, kH), new THREE.MeshStandardMaterial({ map: grille, color: 0x6a6c74, metalness: 0.8, roughness: 0.45 }), BH + 0.0008, kTop + kH / 2, s * (15 * U / 2 + 0.17)));
-
-  // keys + one legend atlas
-  const atlas = document.createElement('canvas'); atlas.width = 1500; atlas.height = 555;
-  const ax = atlas.getContext('2d'); ax.fillStyle = 'rgba(225,222,240,.8)';
-  const geo = {};
-  let z = kTop;
-  ROWS.forEach((row, ri) => {
-    const h = ri === 0 ? U * 0.55 : U; let cx = -15 * U / 2;
-    const zc = z + h / 2; z += h;
-    row.forEach(([code, label, w]) => {
-      const kx = cx + (w * U) / 2; cx += w * U;
-      if (code === 'ArrowKeys') {
-        [[-1, 0.25, 0.5], [0, 0, 0.5], [0, 0.5, 0.5], [1, 0.25, 0.5]].forEach(([dx, dz, sh]) => {
-          const g = geo['ar'] ??= new RoundedBoxGeometry(U * 0.86, 0.018, U * sh - 0.02, 2, 0.006);
-          const k = new THREE.Mesh(g, keyMat); k.position.set(kx + dx * U * 0.9, BH + 0.009, zc - U / 2 + dz * U + U * 0.25); root.add(k);
-        });
-        return;
-      }
-      const g = geo[w + '_' + h] ??= new RoundedBoxGeometry(w * U - 0.026, 0.018, h - 0.026, 2, 0.006);
-      const k = new THREE.Mesh(g, keyMat); k.position.set(kx, BH + 0.009, zc); k.userData.y0 = k.position.y; root.add(k); keys[code] = k;
-      if (label) {
-        ax.font = `500 ${label.length > 2 ? 15 : 20}px "Geist Mono"`;
-        const px = ((kx - w * U / 2 + 15 * U / 2) / (15 * U)) * 1500, py = ((zc - h / 2 - kTop) / kH) * 555;
-        label.length > 2 ? ax.fillText(label, px + 8, py + (ri === 0 ? 20 : 74)) : ax.fillText(label, px + 10, py + 28);
-      }
-    });
-  });
-  const lt = new THREE.CanvasTexture(atlas); lt.colorSpace = THREE.SRGBColorSpace; lt.anisotropy = 8;
-  flat(new THREE.PlaneGeometry(15 * U, kH), new THREE.MeshBasicMaterial({ map: lt, transparent: true, depthWrite: false, opacity: 0.85 }), BH + 0.0185, kTop + kH / 2);
-  keys.Backquote ??= keys.Escape;
-
-  // force-touch trackpad: glass with a hairline edge
-  flat(new THREE.ShapeGeometry(rrShape(1.36, 0.82, 0.05)), new THREE.MeshPhysicalMaterial({ color: 0x55575e, metalness: 0.5, roughness: 0.18, clearcoat: 1, clearcoatRoughness: 0.08 }), BH + 0.0009, D / 2 - 0.5);
-  const hinge = cast(new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, W - 0.75, 24), black));
-  hinge.rotation.z = Math.PI / 2; hinge.position.set(0, BH + 0.01, -D / 2 + 0.035); root.add(hinge);
-
-  // lid: pivots at the hinge, screen faces the deck when closed
-  const lid = new THREE.Group(); lid.position.set(0, BH + 0.003, -D / 2 + 0.03); root.add(lid);
-  const shell = cast(new THREE.Mesh(chassis(W, D - 0.02, R, LT, 0.01), alu)); shell.position.set(0, 0, D / 2 - 0.02); lid.add(shell);
-  const inner = new THREE.Mesh(new THREE.ShapeGeometry(rrShape(W - 0.03, D - 0.05, R - 0.02)), new THREE.MeshPhysicalMaterial({ color: 0x030304, roughness: 0.12, clearcoat: 1 }));
-  inner.rotation.x = Math.PI / 2; inner.position.set(0, -0.001, D / 2 - 0.02); lid.add(inner);
-  const screenMat = new THREE.MeshBasicMaterial({ map: screenTex, toneMapped: false, color: 0x000000 });
-  const SW = 2.96, SH = 1.85;
-  const screen = new THREE.Mesh(new THREE.PlaneGeometry(SW, SH), screenMat); screen.rotation.x = Math.PI / 2; screen.position.set(0, -0.002, D / 2 + 0.035); lid.add(screen);
-  // glass: additive environment reflection over the panel
-  const glass = new THREE.Mesh(new THREE.PlaneGeometry(W - 0.04, D - 0.06), new THREE.MeshStandardMaterial({ color: 0x000000, metalness: 1, roughness: 0.06, transparent: true, blending: THREE.AdditiveBlending, envMapIntensity: 0.22, depthWrite: false }));
-  glass.rotation.x = Math.PI / 2; glass.position.set(0, -0.003, D / 2 - 0.02); lid.add(glass);
-  const notch = new THREE.Mesh(new THREE.ShapeGeometry(rrShape(0.34, 0.08, 0.02)), new THREE.MeshBasicMaterial({ color: 0x030304 }));
-  notch.rotation.x = Math.PI / 2; notch.position.set(0, -0.0025, D / 2 + 0.035 + SH / 2 - 0.02); lid.add(notch);
-  // mark on the back of the lid: polished, picks up the rim light
-  const lc = document.createElement('canvas'); lc.width = 256; lc.height = 128;
-  const lx = lc.getContext('2d'); lx.fillStyle = '#fff'; lx.font = '500 92px "Geist Mono"'; lx.textAlign = 'center'; lx.textBaseline = 'middle'; lx.fillText('</>', 128, 68);
-  const logoT = new THREE.CanvasTexture(lc);
-  const logo = new THREE.Mesh(new THREE.PlaneGeometry(0.48, 0.24), new THREE.MeshPhysicalMaterial({ color: 0xd9d4ff, metalness: 1, roughness: 0.12, alphaMap: logoT, transparent: true }));
-  logo.rotation.x = -Math.PI / 2; logo.rotation.z = Math.PI; logo.position.set(0, LT + 0.002, D / 2 - 0.02); lid.add(logo);
-  const spill = new THREE.PointLight(0x8f7bff, 0, 3, 1.6); spill.position.set(0, -0.6, D / 2); lid.add(spill);
-  root.position.y = 0.006; // feet clearance
-  return { root, lid, keys, screenMat, spill, W, D, BH };
-}
-
-let webgl = true;
-try { webgl = !!document.createElement('canvas').getContext('webgl2'); } catch { webgl = false; }
-
-if (!webgl) {
-  $('.product__canvas').style.background = 'url(assets/lens-hud.webp) center/cover';
-} else document.fonts.ready.then(() => {
-  const canvas = $('.product__canvas');
-  const { r, scene } = makeRenderer(canvas);
-  const cam = new THREE.PerspectiveCamera(28, 1, 0.1, 80);
-
-  const key = new THREE.DirectionalLight(0xf4f1ff, 2.6); key.position.set(1.5, 8, 3.5); key.castShadow = true;
-  Object.assign(key.shadow.camera, { left: -3.5, right: 3.5, top: 3.5, bottom: -3.5, near: 2, far: 16 }); key.shadow.mapSize.set(2048, 2048); key.shadow.radius = 8; key.shadow.bias = -0.0003; key.shadow.normalBias = 0.02;
-  const rim = new THREE.SpotLight(0x7a5cff, 60, 20, 0.6, 0.8); rim.position.set(-4, 4, -5);
-  const fill = new THREE.PointLight(0xc9bfff, 6, 14); fill.position.set(3, 1.5, 5);
-  scene.add(key, rim, fill, new THREE.HemisphereLight(0xb9b0ff, 0x05030f, 0.35));
-
-  // plinth: matte, faint grain, soft bevel
-  const g = grain(22); g.repeat.set(3, 3);
-  const slab = new THREE.Mesh(new RoundedBoxGeometry(4.6, 3.2, 3.3, 6, 0.05), new THREE.MeshPhysicalMaterial({ color: 0x16151d, roughness: 0.62, roughnessMap: g, metalness: 0.15, bumpMap: g, bumpScale: 0.04, clearcoat: 0.2, clearcoatRoughness: 0.6 }));
-  slab.position.y = -1.6; slab.receiveShadow = true; scene.add(slab);
-  // contact shadow: tight and dark when resting, wide and faint when hovering
-  const cs = document.createElement('canvas'); cs.width = cs.height = 256;
-  const cx = cs.getContext('2d'), rg = cx.createRadialGradient(128, 128, 0, 128, 128, 128); rg.addColorStop(0, 'rgba(0,0,0,.85)'); rg.addColorStop(1, 'rgba(0,0,0,0)'); cx.fillStyle = rg; cx.fillRect(0, 0, 256, 256);
-  const contact = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(cs), transparent: true, depthWrite: false }));
-  contact.rotation.x = -Math.PI / 2; contact.position.y = 0.003; scene.add(contact);
-
-  const scr = makeScreen();
-  const tex = new THREE.CanvasTexture(scr.canvas); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = r.capabilities.getMaxAnisotropy();
-  const lap = buildLaptop(tex);
-  const tilt = new THREE.Group(), yaw = new THREE.Group();
-  lap.root.position.y -= lap.BH / 2; tilt.add(lap.root); tilt.position.y = lap.BH / 2; yaw.add(tilt); scene.add(yaw);
-
-  // reel state; one timeline unit ≈ one second of the reference
-  const S = { lid: 0, lift: 0, tiltX: 0, ry: 0, camZ: 10.4, camY: 1.05, lookY: 0.32, power: 0 };
-  const tl = gsap.timeline()
-    .to(S, { lid: 1.93, duration: 0.55, ease: 'power3.out' }, 0)                                   // 0–0.5s lid swings open
-    .to(S, { lift: 0.62, tiltX: 0.36, duration: 0.85, ease: 'power2.inOut' }, 0.4)                 // 0.4–1.2s levitates, tilts toward camera
-    .to(S, { camZ: 9.2, camY: 1.5, lookY: 1.02, duration: 0.95, ease: 'power2.inOut' }, 0.35)     // camera cranes up + dollies in
-    .to(S, { power: 1, duration: 0.5, ease: 'power1.in' }, 0.6)                                     // screen wakes
-    .to(S, { ry: 0.08, camZ: 8.8, duration: 2.6, ease: 'none' }, 1.25)                             // hover drift
-    .to(S, { ry: 0.38, duration: 0.6, ease: 'power1.in' }, 3.85)                                    // slow turn starts
-    .to(S, { ry: Math.PI + 0.12, duration: 1.15, ease: 'power2.inOut' }, 4.45)                      // fast ~180° spin
-    .to(S, { tiltX: 0.5, duration: 0.5, ease: 'power1.out' }, 4.45).to(S, { tiltX: 0.12, duration: 0.65, ease: 'power2.in' }, 4.95)
-    .to(S, { power: 0, duration: 0.35 }, 4.7)
-    .to(S, { lid: 0.42, duration: 0.7, ease: 'power2.in' }, 4.95)                                    // closes during the turn
-    .to(S, { lid: 0, lift: 0, tiltX: 0, duration: 0.75, ease: 'power3.out' }, 5.6)                  // lands closed on the slab
-    .to(S, { camZ: 10.4, camY: 1.05, lookY: 0.32, duration: 1.0, ease: 'power2.inOut' }, 5.45)
-    .to({}, { duration: 0.35 });
-
+/* ---------------- stack: floating sticker field ----------------
+   Each sticker rises at its own speed (parallax) while the section scrolls in,
+   holds while pinned, then peels away upward on exit. Three nested layers so
+   scroll-in, scroll-out and pointer tilt never fight over the same transform. */
+{
+  const sec = $('.float'), items = $$('.sticker', sec);
+  const sp = el => +el.dataset.speed;
   if (!reduced) {
-    ScrollTrigger.create({ trigger: '.product', pin: '.product__stage', start: 'top top', end: '+=460%', scrub: 1, animation: tl, onUpdate: s => gsap.set('.product__meter i', { scaleX: s.progress }) });
-    gsap.fromTo('.lap__word span', { xPercent: 6 }, { xPercent: -16, ease: 'none', scrollTrigger: { trigger: '.product', start: 'top bottom', end: () => '+=' + innerHeight * 5.6, scrub: true } });
-  } else tl.progress(0.3);
-
-  const mouse = { x: 0, y: 0, tx: 0, ty: 0 };
-  let far = 1;
-  const resize = () => { const w = canvas.clientWidth, h = canvas.clientHeight; r.setSize(w, h, false); cam.aspect = w / h; far = Math.max(1, 1.3 / cam.aspect); cam.updateProjectionMatrix(); };
-  resize(); addEventListener('resize', resize);
-  addEventListener('pointermove', e => { mouse.tx = e.clientX / innerWidth - 0.5; mouse.ty = e.clientY / innerHeight - 0.5; });
-
-  /* typing: real keystrokes press real keys; an autopilot types when you don't */
-  const typedEl = $('.typed span');
-  let typed = '', lastHuman = 0, visible = false;
-  const press = code => { const k = lap.keys[code]; if (k) gsap.fromTo(k.position, { y: k.userData.y0 - 0.01 }, { y: k.userData.y0, duration: 0.3, ease: 'back.out(3)', overwrite: true }); };
-  const show = s => { typed = (typed + s).slice(-34); typedEl.textContent = typed; };
-  addEventListener('keydown', e => {
-    if (e.target.closest?.('input,textarea') || !visible) return;
-    if (performance.now() - lastHuman > 3000) typed = ''; // human takes over from the autopilot
-    lastHuman = performance.now(); press(e.code);
-    if (e.key.length === 1) show(e.key); else if (e.key === 'Backspace') { typed = typed.slice(0, -1); typedEl.textContent = typed; }
-  });
-  const LINES = ['ship({ craft: true, ai: true })', 'npm run build -- --beautiful', 'git commit -m "last 2%"', 'await agent.plan(goal)'];
-  let li = 0, ci = 0;
-  (function auto() {
-    setTimeout(auto, 70 + Math.random() * 110);
-    if (!visible || reduced || S.power < 0.5 || performance.now() - lastHuman < 3000) return;
-    const line = LINES[li];
-    if (ci === 0) typed = '';
-    if (ci < line.length) {
-      const ch = line[ci++], base = SHIFTED[ch] ?? ch;
-      if (SHIFTED[ch] || /[A-Z]/.test(ch)) press('ShiftLeft');
-      press(codeOf(base.toLowerCase())); show(ch);
-    } else { press('Enter'); ci = 0; li = (li + 1) % LINES.length; }
-  })();
-
-  let onAt = -1, lastDraw = 0;
-  gsap.ticker.add(t => {
-    const b = canvas.getBoundingClientRect(); // pin-safe visibility (a separate toggle trigger mis-measures pinned parents)
-    visible = b.bottom > 0 && b.top < innerHeight;
-    if (!visible) return;
-    mouse.x += (mouse.tx - mouse.x) * 0.05; mouse.y += (mouse.ty - mouse.y) * 0.05;
-    const hover = S.lift > 0.05 ? Math.sin(t * 1.1) * 0.025 * (S.lift / 0.62) : 0;
-    lap.lid.rotation.x = -S.lid;
-    tilt.rotation.x = S.tiltX;
-    yaw.rotation.y = S.ry + mouse.x * 0.1 * (S.lift / 0.62);
-    yaw.position.y = S.lift + hover;
-    cam.position.set(mouse.x * 0.25, (S.camY - mouse.y * 0.15), S.camZ * far);
-    cam.lookAt(0, S.lookY, 0);
-    // contact shadow reacts to height like the reel: tight/dark on the slab, broad/soft when floating
-    const h = S.lift / 0.62;
-    contact.scale.set(3.6 + h * 1.4, 1, 2.6 + h * 1.2); contact.material.opacity = 0.75 - h * 0.45;
-    // screen: restart the boot sequence each time it powers on; redraw at ~30fps
-    if (S.power > 0.5 && onAt < 0) onAt = t; else if (S.power < 0.05) onAt = -1;
-    lap.screenMat.color.setScalar(S.power);
-    lap.spill.intensity = S.power * 2.4;
-    if (onAt >= 0 && t - lastDraw > 1 / 30) { scr.draw(reduced ? 6 : t - onAt); tex.needsUpdate = true; lastDraw = t; }
-    r.render(scene, cam);
-  });
-  ScrollTrigger.sort(); ScrollTrigger.refresh();
-});
+    items.forEach(el => gsap.fromTo(el, { y: () => innerHeight * 0.5 * sp(el), rotation: () => (sp(el) - 1.6) * 18 },
+      { y: 0, rotation: 0, ease: 'none', scrollTrigger: { trigger: sec, start: 'top bottom', end: 'top top', scrub: true, invalidateOnRefresh: true } }));
+    gsap.from('.float__word span', { yPercent: 40, opacity: 0, ease: 'none', scrollTrigger: { trigger: sec, start: 'top 80%', end: 'top 10%', scrub: true } });
+    gsap.timeline({ scrollTrigger: { trigger: sec, pin: '.float__stage', start: 'top top', end: '+=120%', scrub: true } })
+      .to({}, { duration: 0.4 })
+      .to(items.map(el => $('.sticker__out', el)), {
+        y: i => -innerHeight * (0.45 + sp(items[i]) * 0.3), rotation: i => (i % 2 ? 1 : -1) * (14 + sp(items[i]) * 8),
+        scale: 0.75, opacity: 0, ease: 'power2.in', duration: 1, stagger: { each: 0.04, from: 'center' }
+      }, 0.4)
+      .to('.float__word span', { yPercent: -35, scale: 0.92, opacity: 0, ease: 'power2.in', duration: 0.8 }, 0.7)
+      .to(['.float__cap', '.float__head'], { y: -50, opacity: 0, ease: 'power2.in', duration: 0.5 }, 0.8);
+  }
+  if (finePointer && !reduced) {
+    const tilt = items.map(el => {
+      const t = $('.sticker__tilt', el), o = { duration: 0.9, ease: 'power3' };
+      return { rx: gsap.quickTo(t, 'rotationX', o), ry: gsap.quickTo(t, 'rotationY', o), x: gsap.quickTo(t, 'x', o), y: gsap.quickTo(t, 'y', o), d: sp(el) };
+    });
+    sec.addEventListener('pointermove', e => {
+      const nx = e.clientX / innerWidth - 0.5, ny = e.clientY / innerHeight - 0.5;
+      tilt.forEach(o => { o.ry(nx * 34); o.rx(-ny * 34); o.x(nx * -26 * o.d); o.y(ny * -18 * o.d); });
+    });
+  }
+}
 
 // Pins are created out of DOM order (3D scene waits for fonts) — sort so spacing is computed top-down.
 ScrollTrigger.sort();

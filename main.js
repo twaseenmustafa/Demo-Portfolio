@@ -78,7 +78,7 @@ document.body.classList.add('is-loading');
   if (reduced) {
     imgReady.then(() => gsap.to(loader, { opacity: 0, duration: 0.4, onComplete: () => { finish(); } }));
   } else {
-    const assemble = gsap.to(px, { scale: 1, duration: 0.16, ease: 'back.out(3)', stagger: { each: 0.035, from: 'random' } });
+    const assemble = gsap.to(px, { scale: 1, duration: 0.16, ease: 'back.out(3)', delay: 0.8, stagger: { each: 0.035, from: 'random' } });
     Promise.all([imgReady, assemble.then(), document.fonts.ready]).then(() => {
       const m = mark.getBoundingClientRect(), t = navLogo.getBoundingClientRect(), s = t.width / m.width;
       // build the hero intro now but hold it: its from-states (dark stage, no light, no arc, no portrait)

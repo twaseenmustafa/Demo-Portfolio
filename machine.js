@@ -427,7 +427,9 @@ export function initMachine({ reduced, sfx = () => {} }) {
 
   // ---------- text: masked word reveal in, staggered lift-off out ----------
   const title = sec.querySelector('.pm__title');
-  title.innerHTML = title.innerHTML.split(/(<em>.*?<\/em>|<br>)|\s+/).filter(Boolean).map(w => w === '<br>' ? w : `<span class="w"><span>${w}</span></span>`).join(' ');
+  const wrap = (txt, cls = 'w') => { const o = document.createElement('span'), i = document.createElement('span'); o.className = cls; i.textContent = txt; o.appendChild(i); return o; };
+  const words = [...title.childNodes].flatMap(n => n.nodeType === 3 ? n.textContent.trim().split(/\s+/).filter(Boolean).map(w => wrap(w)) : n.nodeName === 'BR' ? [document.createElement('br')] : n.nodeName === 'EM' ? [(() => { const w = wrap(n.textContent.trim()); w.firstChild.className = 'em'; return w; })()] : []);
+  title.replaceChildren(...words.flatMap((p, i) => (i ? [document.createTextNode(' '), p] : [p])));
   if (!reduced) {
     gsap.timeline({ scrollTrigger: { refreshPriority: -1, trigger: sec, start: 'top 70%' } })
       .from(sec.querySelectorAll('.pm__title .w>span'), { yPercent: 115, rotate: 5, duration: 1.1, stagger: 0.08, ease: 'expo.out' })

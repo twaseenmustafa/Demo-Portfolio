@@ -52,9 +52,10 @@ $$('a[href^="#"]').forEach(a => a.addEventListener('click', e => {
 document.body.classList.add('is-loading');
 {
   const heroImg = $('.hero__portrait img'), loader = $('.loader'), mark = $('.loader__mark'), word = $('.loader__word span'), navLogo = $('.nav .logo svg');
-  const imgReady = new Promise(r => (heroImg.complete ? r() : (heroImg.onload = heroImg.onerror = r, setTimeout(r, 2200))));
-  // the mark's pixels live in the HTML and assemble in CSS, so the loader shows instantly
-  const px = [...mark.children];
+  const imgReady = new Promise(r => (heroImg.complete ? r() : (heroImg.onload = heroImg.onerror = r, setTimeout(r, 4000))));
+  // pixel map of </> (13 x 7 cells)
+  const CELLS = [[3,0],[2,1],[1,2],[0,3],[1,4],[2,5],[3,6], [8,0],[8,1],[7,2],[6,3],[6,4],[5,5],[5,6], [9,0],[10,1],[11,2],[12,3],[11,4],[10,5],[9,6]];
+  const px = CELLS.map(([x, y]) => { const i = document.createElement('i'); i.style.left = `calc(var(--u) * ${x})`; i.style.top = `calc(var(--u) * ${y})`; mark.appendChild(i); return i; });
   // stepped bottom edge: columns sit at a few heights, like pixels peeling off
   const STEPS = [0, 1, 0, 2, 1, 0, 1, 2, 0, 1, 0, 2, 1, 0], E = { b: 0 };
   const paintEdge = () => {
@@ -77,10 +78,8 @@ document.body.classList.add('is-loading');
   if (reduced) {
     imgReady.then(() => gsap.to(loader, { opacity: 0, duration: 0.4, onComplete: () => { finish(); } }));
   } else {
-    // fixed, short beat: the mark finishes at ~1.3 s; a slow connection only waits as long as the portrait needs (max ~2.2 s)
-    const beat = new Promise(r => setTimeout(r, Math.max(0, 1450 - performance.now())));
-    const fonts = Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 1200))]);
-    Promise.all([imgReady, beat, fonts]).then(() => {
+    const assemble = gsap.to(px, { scale: 1, duration: 0.16, ease: 'back.out(3)', delay: 0.8, stagger: { each: 0.035, from: 'random' } });
+    Promise.all([imgReady, assemble.then(), document.fonts.ready]).then(() => {
       const m = mark.getBoundingClientRect(), t = navLogo.getBoundingClientRect(), s = t.width / m.width;
       // build the hero intro now but hold it: its from-states (dark stage, no light, no arc, no portrait)
       // apply immediately, so the lifting field reveals an empty stage and the full intro plays after

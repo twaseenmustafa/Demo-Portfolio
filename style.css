@@ -41,10 +41,13 @@ em{font-style:normal;color:var(--lav)}
 /* ---------- chrome ---------- */
 /* loader: a violet field; the </> mark assembles from pixels, flies into the nav logo while a giant
    wordmark rises, then the field lifts away on a stepped pixel edge to reveal the hero */
-.loader{position:fixed;inset:0;z-index:100;background:var(--bg);overflow:hidden;will-change:clip-path;animation:loader-tint .7s var(--ease) .15s forwards}
-@keyframes loader-tint{to{background:var(--violet)}}
+.loader{position:fixed;inset:0;z-index:100;overflow:hidden;will-change:clip-path;--lr:-45%;background:radial-gradient(135% 135% at 50% 115%,var(--violet) var(--lr),var(--bg) calc(var(--lr) + 45%));animation:loader-wash 1s cubic-bezier(.4,0,.2,1) .1s forwards}
+/* black melts into violet from the bottom, in pure CSS, so it plays before any script has loaded */
+@property --lr{syntax:'<percentage>';inherits:false;initial-value:-45%}
+@keyframes loader-wash{to{--lr:100%;background-color:var(--violet)}}
 .loader__mark{position:absolute;left:50%;top:50%;--u:8px;width:calc(var(--u) * 13);height:calc(var(--u) * 7);translate:-50% -50%;will-change:transform}
-.loader__mark i{position:absolute;width:var(--u);height:var(--u);background:#fff;scale:0}
+.loader__mark i{position:absolute;width:var(--u);height:var(--u);background:#fff;scale:0;animation:loader-px .2s cubic-bezier(.34,1.56,.64,1) var(--d,.6s) forwards}
+@keyframes loader-px{to{scale:1}}
 .loader__word{position:absolute;left:var(--pad);right:var(--pad);bottom:-.1em;overflow:hidden;font-weight:800;font-size:min(30vw,46vh);line-height:.86;letter-spacing:-.065em;color:#fff;white-space:nowrap}
 .loader__word span{display:block;padding-top:.04em;will-change:transform;transform:translateY(110%)}
 

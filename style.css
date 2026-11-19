@@ -115,6 +115,7 @@ em{font-style:normal;color:var(--lav)}
 .hero__go svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;transition:transform .45s var(--ease)}
 .hero__lede:hover .hero__go{background:var(--violet);color:#fff}
 .hero__lede:hover .hero__go svg{transform:translate(2px,-2px)}
+.hero__sub{margin-top:clamp(16px,2.4vh,28px);max-width:34ch;font-size:clamp(14px,1.1vw,16px);line-height:1.5;color:var(--muted);letter-spacing:-.005em}
 .hero__title .line{display:block;overflow:hidden;padding-bottom:.06em}
 .hero__title .line>span{display:inline-block}
 .hero__meta{position:absolute;z-index:4;left:var(--pad);right:var(--pad);bottom:28px;display:flex;justify-content:space-between;align-items:center;font:500 10px var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}

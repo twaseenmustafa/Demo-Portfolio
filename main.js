@@ -73,7 +73,7 @@ document.body.classList.add('is-loading');
     .from('.hero__portrait img', { yPercent: 10, scale: 1.08, '--b': 0, '--bl': '18px', duration: 3.4, ease: 'power3.out', onComplete() { this.targets()[0].style.filter = 'none'; } }, '<0.15')
     .from('.hero__title .line > span', { yPercent: 115, stagger: 0.12, duration: 1.8 }, 1.6) // after the field has fully cleared
     .from('.nav > *:not(.logo)', { y: -30, opacity: 0, stagger: 0.08, duration: 1.4 }, '<0.3')
-    .from(['.hero__lede', '.hero__meta'], { y: 24, opacity: 0, stagger: 0.16, duration: 1.6 }, '<0.4');
+    .from(['.hero__sub', '.hero__lede', '.hero__meta'], { y: 24, opacity: 0, stagger: 0.16, duration: 1.6 }, '<0.4');
   const finish = () => { loader.style.display = 'none'; document.body.classList.remove('is-loading'); lenis?.start(); };
   if (reduced) {
     imgReady.then(() => gsap.to(loader, { opacity: 0, duration: 0.4, onComplete: () => { finish(); } }));
